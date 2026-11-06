@@ -36,7 +36,7 @@ export function SiteNavbar({ className }: { className?: string }) {
       <div className="mx-auto max-w-330">
         <nav
           className={cn(
-            "flex items-center justify-between gap-4 rounded-2xl bg-[#222222] px-4 md:px-6",
+            "flex items-center justify-between gap-4 rounded-2xl bg-[#3c3c44]/95 px-4 backdrop-blur-lg md:px-6",
             "h-17 lg:h-18.5"
           )}
         >
