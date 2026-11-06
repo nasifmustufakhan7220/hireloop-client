@@ -74,7 +74,7 @@ export function SiteNavbar({ className }: { className?: string }) {
 
             <div className="flex items-center gap-4">
               <Button
-                render={<Link href="/login" />}
+                render={<Link href="/sign-in" />}
                 nativeButton={false}
                 variant="ghost"
                 className="h-13 rounded-xl bg-transparent px-6 py-4 text-lg font-normal text-[#5C53FE] hover:bg-[#5C53FE]/10"
@@ -82,7 +82,7 @@ export function SiteNavbar({ className }: { className?: string }) {
                 Sign In
               </Button>
               <Button
-                render={<Link href="/register" />}
+                render={<Link href="/sign-up" />}
                 nativeButton={false}
                 className="h-13 rounded-xl border border-[#090a15]/10 bg-[#5C53FE] px-6 py-4 text-lg font-normal text-white hover:bg-[#4b43e8]"
               >
@@ -138,7 +138,7 @@ export function SiteNavbar({ className }: { className?: string }) {
               <Separator className="bg-white/10" />
               <div className="flex flex-col gap-4 p-4">
                 <Button
-                  render={<Link href="/login" onClick={closeMenu} />}
+                  render={<Link href="/sign-in" onClick={closeMenu} />}
                   nativeButton={false}
                   variant="ghost"
                   className="h-11 w-full rounded-xl bg-transparent text-lg font-normal text-[#5C53FE] hover:bg-[#5C53FE]/10"
@@ -146,7 +146,7 @@ export function SiteNavbar({ className }: { className?: string }) {
                   Sign In
                 </Button>
                 <Button
-                  render={<Link href="/register" onClick={closeMenu} />}
+                  render={<Link href="/sign-up" onClick={closeMenu} />}
                   nativeButton={false}
                   className="h-11 w-full rounded-xl border border-[#090a15]/10 bg-[#5C53FE] text-lg font-normal text-white hover:bg-[#4b43e8]"
                 >
