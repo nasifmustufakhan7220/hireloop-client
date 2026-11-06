@@ -35,7 +35,7 @@ export function PasswordInput({
         autoComplete={autoComplete}
         placeholder={placeholder}
         className={cn(
-          "h-12 w-full rounded-xl border border-white/10 bg-white/[0.04] pr-12 pl-11 text-sm text-white transition-colors outline-none placeholder:text-white/30 focus:border-[#5C53FE]/70 focus:bg-white/[0.06] focus:ring-2 focus:ring-[#5C53FE]/20",
+          "h-12 w-full rounded-xl border border-white/10 bg-white/4 pr-12 pl-11 text-sm text-white transition-colors outline-none placeholder:text-white/30 focus:border-[#5C53FE]/70 focus:bg-white/6 focus:ring-2 focus:ring-[#5C53FE]/20",
           className
         )}
       />

@@ -1,9 +1,15 @@
 "use client"
-import { Mail, User } from "lucide-react"
+import { Building2, Mail, Search, ShieldCheck, User } from "lucide-react"
 
 import { PasswordInput } from "@/components/auth/password-input"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
+
+const ROLES = [
+  { value: "seeker", label: "Job Seeker", icon: Search },
+  { value: "recruiter", label: "Recruiter", icon: Building2 },
+  { value: "admin", label: "Admin", icon: ShieldCheck },
+]
 
 const SignUpForm = () => {
   const handelSignUp = async (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -14,6 +20,7 @@ const SignUpForm = () => {
       name: formObject.name,
       email: formObject.email, 
       password: formObject.password, 
+      role: formObject.role,
       callbackURL: "/",
     });
 
@@ -39,6 +46,45 @@ const SignUpForm = () => {
               placeholder="John Doe"
               className="h-12 w-full rounded-xl border border-white/10 bg-white/4 pr-4 pl-11 text-sm text-white transition-colors outline-none placeholder:text-white/30 focus:border-[#5C53FE]/70 focus:bg-white/6 focus:ring-2 focus:ring-[#5C53FE]/20"
             />
+          </div>
+        </div>
+
+        {/* Role selector */}
+        <div className="flex flex-col gap-2">
+          <span id="role-label" className="text-sm font-medium text-white/80">
+            I am signing up as
+          </span>
+          <div
+            role="radiogroup"
+            aria-labelledby="role-label"
+            className="grid grid-cols-3 gap-2"
+          >
+            {ROLES.map((role) => {
+              const Icon = role.icon
+              return (
+                <label
+                  key={role.value}
+                  className="group cursor-pointer rounded-xl border border-white/10 bg-white/4 px-2 py-3 transition-colors outline-none not-has-checked:hover:bg-white/8 has-checked:border-[#5C53FE]/70 has-checked:bg-[#5C53FE]/12 has-focus-visible:ring-2 has-focus-visible:ring-[#5C53FE]/40"
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value={role.value}
+                    defaultChecked={role.value === "seeker"}
+                    className="sr-only"
+                  />
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Icon
+                      aria-hidden
+                      className="size-5 text-white/45 transition-colors group-has-checked:text-[#8b85ff]"
+                    />
+                    <span className="text-xs font-medium text-white/60 transition-colors group-has-checked:text-white">
+                      {role.label}
+                    </span>
+                  </div>
+                </label>
+              )
+            })}
           </div>
         </div>
 
