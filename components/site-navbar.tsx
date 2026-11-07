@@ -20,18 +20,20 @@ import { MenuIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { authClient } from "@/lib/auth-client"
 
-const navLinks = [
-  { label: "Browse Jobs", href: "/jobs" },
-  { label: "Company", href: "/companies" },
-  { label: "Pricing", href: "/pricing" },
-] as const
+
 
 export function SiteNavbar({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const closeMenu = () => setOpen(false)
   const { data: session } = authClient.useSession()
-  const router = useRouter()
+  const router = useRouter();
+  const navLinks = [
+  { label: "Browse Jobs", href: "/jobs" },
+  { label: "Company", href: "/companies" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Dashboard", href: `/dashboard/${session?.user?.role}` },
+] as const
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -91,7 +93,6 @@ export function SiteNavbar({ className }: { className?: string }) {
                   <span>{session?.user && session?.user.name}</span>
                   <Button
                     onClick={handleSignOut}
-                    nativeButton={false}
                     variant="ghost"
                     className="h-13 rounded-xl bg-transparent px-6 py-4 text-lg font-normal text-[#5C53FE] hover:bg-[#5C53FE]/10"
                   >
