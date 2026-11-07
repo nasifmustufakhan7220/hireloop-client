@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 
 import logo from "@/app/images/logo.png"
@@ -18,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { MenuIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { authClient } from "@/lib/auth-client"
 
 const navLinks = [
   { label: "Browse Jobs", href: "/jobs" },
@@ -29,6 +30,18 @@ export function SiteNavbar({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const closeMenu = () => setOpen(false)
+  const { data: session } = authClient.useSession()
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/sign-in") // redirect to login page
+        },
+      },
+    })
+  }
 
   return (
     <header className={cn("w-full px-4 sm:px-6 lg:px-10 xl:px-15", className)}>
@@ -73,21 +86,38 @@ export function SiteNavbar({ className }: { className?: string }) {
             <div className="h-6 w-px bg-[#a8a8a8]/40" />
 
             <div className="flex items-center gap-4">
-              <Button
-                render={<Link href="/sign-in" />}
-                nativeButton={false}
-                variant="ghost"
-                className="h-13 rounded-xl bg-transparent px-6 py-4 text-lg font-normal text-[#5C53FE] hover:bg-[#5C53FE]/10"
-              >
-                Sign In
-              </Button>
-              <Button
-                render={<Link href="/sign-up" />}
-                nativeButton={false}
-                className="h-13 rounded-xl border border-[#090a15]/10 bg-[#5C53FE] px-6 py-4 text-lg font-normal text-white hover:bg-[#4b43e8]"
-              >
-                Get Started
-              </Button>
+              {session?.user ? (
+                <>
+                  <span>{session?.user && session?.user.name}</span>
+                  <Button
+                    onClick={handleSignOut}
+                    nativeButton={false}
+                    variant="ghost"
+                    className="h-13 rounded-xl bg-transparent px-6 py-4 text-lg font-normal text-[#5C53FE] hover:bg-[#5C53FE]/10"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <Button
+                    render={<Link href="/sign-in" />}
+                    nativeButton={false}
+                    variant="ghost"
+                    className="h-13 rounded-xl bg-transparent px-6 py-4 text-lg font-normal text-[#5C53FE] hover:bg-[#5C53FE]/10"
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    render={<Link href="/sign-up" />}
+                    nativeButton={false}
+                    className="h-13 rounded-xl border border-[#090a15]/10 bg-[#5C53FE] px-6 py-4 text-lg font-normal text-white hover:bg-[#4b43e8]"
+                  >
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 

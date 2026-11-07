@@ -4,6 +4,7 @@ import { Building2, Mail, Search, ShieldCheck, User } from "lucide-react"
 import { PasswordInput } from "@/components/auth/password-input"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
 
 const ROLES = [
   { value: "seeker" as const, label: "Job Seeker", icon: Search },
@@ -14,20 +15,28 @@ const ROLES = [
 type Role = (typeof ROLES)[number]["value"]
 
 const SignUpForm = () => {
+  const router = useRouter();
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const formObject = Object.fromEntries(formData.entries()) as Record<string, string>
+    const formObject = Object.fromEntries(formData.entries()) as Record<
+      string,
+      string
+    >
     const { data: signUpData, error } = await authClient.signUp.email({
       name: formObject.name,
       email: formObject.email,
       password: formObject.password,
       role: formObject.role as Role,
       callbackURL: "/",
-    });
+    })
 
     console.log(signUpData, error)
+
+    if (!error) {
+      router.push('/');
     }
+  }
   return (
     <div>
       <form className="flex flex-col gap-5" onSubmit={handleSignUp}>
