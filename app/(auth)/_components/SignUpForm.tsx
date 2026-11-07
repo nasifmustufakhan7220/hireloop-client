@@ -6,29 +6,31 @@ import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
 
 const ROLES = [
-  { value: "seeker", label: "Job Seeker", icon: Search },
-  { value: "recruiter", label: "Recruiter", icon: Building2 },
-  { value: "admin", label: "Admin", icon: ShieldCheck },
+  { value: "seeker" as const, label: "Job Seeker", icon: Search },
+  { value: "recruiter" as const, label: "Recruiter", icon: Building2 },
+  { value: "admin" as const, label: "Admin", icon: ShieldCheck },
 ]
 
+type Role = (typeof ROLES)[number]["value"]
+
 const SignUpForm = () => {
-  const handelSignUp = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const formObject = Object.fromEntries(formData.entries()) as Record<string, string>
-    const { data:signUpData, error } = await authClient.signUp.email({
+    const { data: signUpData, error } = await authClient.signUp.email({
       name: formObject.name,
-      email: formObject.email, 
-      password: formObject.password, 
-      role: formObject.role,
+      email: formObject.email,
+      password: formObject.password,
+      role: formObject.role as Role,
       callbackURL: "/",
     });
 
-    console.log(signUpData,error);
-  }
+    console.log(signUpData, error)
+    }
   return (
     <div>
-      <form className="flex flex-col gap-5" onSubmit={handelSignUp}>
+      <form className="flex flex-col gap-5" onSubmit={handleSignUp}>
         <div className="flex flex-col gap-2">
           <label htmlFor="name" className="text-sm font-medium text-white/80">
             Full name
