@@ -1,0 +1,26 @@
+type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
+export interface IJobsType{
+    jobTitle: string;
+      companyName: string;
+      jobCategory: string;
+      jobType: JobTypes;
+      remoteWork: boolean;
+      jobLocation: string;
+      deadline: string;
+      minSalary: string;
+      maxSalary: string;
+      salaryFrequency: string;
+      responsibilities: string;
+      qualifications: string;
+}
+
+export const createJob = async (jobData: IJobsType) => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/jobs`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(jobData)
+    });
+    return response.json();
+}

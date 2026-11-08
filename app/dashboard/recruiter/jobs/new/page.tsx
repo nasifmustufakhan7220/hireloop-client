@@ -22,29 +22,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { createJob, IJobsType } from "@/lib/actions/jobs";
 
 // Simple list of job types shown as buttons
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"];
+type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
+
 
 const AddJobPage = () => {
   // State only for the Job Type buttons
-  const [jobType, setJobType] = useState("Full-time");
+  const [job, setJob] = useState("Full-time");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Get each field value using its "name" attribute
     const newFormData = new FormData(event.currentTarget);
     const form = Object.fromEntries(newFormData.entries()) as Record<
       string,
-      string | boolean
+      string
     >;
 
-    const data = {
+    const data:IJobsType = {
       jobTitle: form.jobTitle,
       companyName: form.companyName,
       jobCategory: form.jobCategory,
-      jobType: form.jobType,
+      jobType: form.jobType as JobTypes,
       // FormData gives: OFF = undefined, ON = the string "on"
       // So: is it "on"?  → true : false
       remoteWork: form.remoteWork === "on",
@@ -57,7 +60,8 @@ const AddJobPage = () => {
       qualifications: form.qualifications,
     };
 
-    console.log("New job data:", data);
+    const result = await createJob(data);
+    console.log("Job created:", result);
   };
 
   return (
@@ -179,7 +183,7 @@ const AddJobPage = () => {
                   key={type}
                   className={
                     // Highlight the selected one
-                    type === jobType
+                    type === job
                       ? "cursor-pointer rounded-lg border border-violet-500 bg-violet-500/10 py-2 text-center text-sm text-violet-300 transition-colors"
                       : "cursor-pointer rounded-lg border border-input bg-transparent py-2 text-center text-sm text-muted-foreground transition-colors hover:bg-input/50"
                   }
@@ -188,8 +192,8 @@ const AddJobPage = () => {
                     type="radio"
                     name="jobType"
                     value={type}
-                    checked={jobType === type}
-                    onChange={() => setJobType(type)}
+                    checked={job === type}
+                    onChange={() => setJob(type)}
                     className="sr-only"
                   />
                   {type}
