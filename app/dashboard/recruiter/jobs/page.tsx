@@ -13,7 +13,6 @@ import {
   Plus,
   ServerCog,
   Settings,
-  Trash2,
   Users,
 } from "lucide-react";
 
@@ -409,14 +408,7 @@ const ManageJobsPage = async() => {
                   Update
                 </Button>
 
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Delete job post"
-                  className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                >
-                  <Trash2 className="size-4!" />
-                </Button>
+                <DeleteJobs job={job} />
               </div>
             </div>
           );
