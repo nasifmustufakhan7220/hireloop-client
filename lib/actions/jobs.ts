@@ -1,4 +1,5 @@
 type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
+type JobStatus =  "Active" | "Paused" | "Closed";
 export interface IJobsType{
     jobTitle: string;
       companyName: string;
@@ -12,6 +13,9 @@ export interface IJobsType{
       salaryFrequency: string;
       responsibilities: string;
       qualifications: string;
+      applicants?: number;
+      status?: JobStatus;
+      postedAgo?: string;
 }
 
 export const createJob = async (jobData: IJobsType) => {

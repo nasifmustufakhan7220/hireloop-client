@@ -24,30 +24,26 @@ import {
 } from "@/components/ui/select";
 import { createJob, IJobsType } from "@/lib/actions/jobs";
 
-// Simple list of job types shown as buttons
+
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"];
 type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
 
 
 const AddJobPage = () => {
-  // State only for the Job Type buttons
+
   const [job, setJob] = useState("Full-time");
 
   const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    // Get each field value using its "name" attribute
     const newFormData = new FormData(event.currentTarget);
-    const form = Object.fromEntries(newFormData.entries()) as Record<
-      string,
-      string
-    >;
+    const form = Object.fromEntries(newFormData.entries()) as Record< string,string>;
 
     const data:IJobsType = {
       jobTitle: form.jobTitle,
       companyName: form.companyName,
       jobCategory: form.jobCategory,
       jobType: form.jobType as JobTypes,
+
       // FormData gives: OFF = undefined, ON = the string "on"
       // So: is it "on"?  → true : false
       remoteWork: form.remoteWork === "on",
@@ -60,7 +56,7 @@ const AddJobPage = () => {
       qualifications: form.qualifications,
     };
 
-    const result = await createJob(data);
+    const result = await createJob({...data, applicants: 10, status: "Active", postedAgo: "1 day ago"});
     console.log("Job created:", result);
   };
 
