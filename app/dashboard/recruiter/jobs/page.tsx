@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import {
@@ -25,7 +23,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -38,16 +35,13 @@ import {
 } from "@/components/ui/table";
 import { cn } from "cn";
 import { IJobsType } from "@/lib/actions/jobs";
+import { getJobs } from "@/lib/api/jobs";
+import { DeleteJobs } from "@/app/components/DeleteJobs";
 
 type JobStatus = "Active" | "Paused" | "Closed";
 
-/**
- * A single row of the manage-posts table.
- * Extends the canonical job shape (IJobsType) with the
- * recruiter-dashboard-only fields (applicants, status, posted time).
- */
-interface IJobPostRow extends IJobsType {
-  id: string;
+export interface IJobPostRow extends IJobsType {
+  _id: string;
   applicants: number;
   status: JobStatus;
   postedAgo: string;
@@ -68,7 +62,6 @@ const STATUS_STYLES: Record<JobStatus, { badge: string; dot: string }> = {
   },
 };
 
-/** Category icon + tinted chip, keyed off `jobCategory`. */
 const CATEGORY_STYLES: Record<string,{ icon: React.ElementType; chip: string }> = {
   engineering: {
     icon: CodeXml,
@@ -94,8 +87,6 @@ const CATEGORY_STYLES: Record<string,{ icon: React.ElementType; chip: string }> 
 
 const categoryStyle = (jobCategory: string) => CATEGORY_STYLES[Object.keys(CATEGORY_STYLES).find(key=>jobCategory.toLowerCase().includes(key)) ?? "engineering"] || { icon: CircleDot, chip: "bg-muted/10 text-muted-foreground"};
 
-
-/** `per-hour` -> `hr`, `per-year` -> `yr`, ... for compact display. */
 const frequencyLabel = (salaryFrequency: string) =>salaryFrequency.replace("per-", "").replace("month", "mo");
 
 const formatDate = (iso: string) =>
@@ -105,99 +96,8 @@ const formatDate = (iso: string) =>
     year: "numeric",
 });
 
-const JOB_POSTS: IJobPostRow[] = [
-  {
-    id: "1",
-    jobTitle: "Frontend Developer",
-    jobCategory: "Engineering & Tech",
-    companyName: "HirePulse Network",
-    jobType: "Full-time",
-    remoteWork: true,
-    jobLocation: "New York, USA",
-    deadline: "2025-05-30",
-    minSalary: "25",
-    maxSalary: "40",
-    salaryFrequency: "per-hour",
-    responsibilities: "",
-    qualifications: "",
-    applicants: 34,
-    status: "Active",
-    postedAgo: "Posted 44 days ago",
-  },
-  {
-    id: "2",
-    jobTitle: "Senior Product Designer",
-    jobCategory: "Design & Creative",
-    companyName: "HirePulse Labs",
-    jobType: "Full-time",
-    remoteWork: true,
-    jobLocation: "London, UK",
-    deadline: "2025-06-14",
-    minSalary: "90",
-    maxSalary: "115",
-    salaryFrequency: "per-year",
-    responsibilities: "",
-    qualifications: "",
-    applicants: 19,
-    status: "Active",
-    postedAgo: "Posted 18 days ago",
-  },
-  {
-    id: "3",
-    jobTitle: "DevOps Specialist",
-    jobCategory: "Infrastructure",
-    companyName: "HirePulse Platform",
-    jobType: "Full-time",
-    remoteWork: false,
-    jobLocation: "Berlin, Germany",
-    deadline: "2025-06-30",
-    minSalary: "95",
-    maxSalary: "120",
-    salaryFrequency: "per-year",
-    responsibilities: "",
-    qualifications: "",
-    applicants: 12,
-    status: "Active",
-    postedAgo: "Posted 26 days ago",
-  },
-  {
-    id: "4",
-    jobTitle: "Product Marketing Lead",
-    jobCategory: "Marketing",
-    companyName: "HirePulse Network",
-    jobType: "Full-time",
-    remoteWork: true,
-    jobLocation: "Istanbul, Türkiye",
-    deadline: "2025-07-15",
-    minSalary: "80",
-    maxSalary: "105",
-    salaryFrequency: "per-year",
-    responsibilities: "",
-    qualifications: "",
-    applicants: 27,
-    status: "Active",
-    postedAgo: "Posted 50 days ago",
-  },
-  {
-    id: "5",
-    jobTitle: "QA Automation Engineer",
-    jobCategory: "Quality Assurance",
-    companyName: "HirePulse Platform",
-    jobType: "Part-time",
-    remoteWork: true,
-    jobLocation: "Dublin, Ireland",
-    deadline: "2025-05-01",
-    minSalary: "35",
-    maxSalary: "50",
-    salaryFrequency: "per-hour",
-    responsibilities: "",
-    qualifications: "",
-    applicants: 6,
-    status: "Closed",
-    postedAgo: "Closed",
-  },
-];
 
+  
 const COLUMNS = [
   "Job Title & Dept",
   "Company & Location",
@@ -210,16 +110,16 @@ const COLUMNS = [
 ] as const;
 
 const StatusPill = ({ status }: { status: JobStatus }) => {
-  const style = STATUS_STYLES[status];
+  const style = STATUS_STYLES[status] ?? STATUS_STYLES.Closed;
   return (
     <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
-        style.badge
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+          style.badge
       )}
     >
       <span className={cn("size-1.5 rounded-full", style.dot)} />
-      {status}
+      {status ?? "Closed"}
     </span>
   );
 };
@@ -264,7 +164,9 @@ const CompanyLocation = ({ job }: { job: IJobPostRow }) => (
   </div>
 );
 
-const ManageJobsPage = () => {
+const ManageJobsPage = async() => {
+  const JOB_POSTS: IJobPostRow[] = await getJobs();
+
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       {/* Breadcrumb */}
@@ -320,7 +222,7 @@ const ManageJobsPage = () => {
 
           <TableBody>
             {JOB_POSTS.map((job) => (
-              <TableRow key={job.id}>
+              <TableRow key={job._id}>
                 {/* Job title & dept */}
                 <TableCell className="pl-4 sm:pl-5">
                   <JobTitleDept job={job} />
@@ -391,14 +293,7 @@ const ManageJobsPage = () => {
                       Update
                     </Button>
 
-                    <Button
-                      variant="outline"
-                      size="icon-sm"
-                      aria-label="Delete job post"
-                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <Trash2 className="size-3.5!" />
-                    </Button>
+                    <DeleteJobs job={job} />
 
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -415,15 +310,10 @@ const ManageJobsPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>View applicants</DropdownMenuItem>
-                        <DropdownMenuItem>Mark as paused</DropdownMenuItem>
-                        <DropdownMenuItem>Duplicate post</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive">
-                          <Trash2 className="size-4!" />
-                          Delete
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+
+
                   </div>
                 </TableCell>
               </TableRow>
@@ -437,7 +327,7 @@ const ManageJobsPage = () => {
         {JOB_POSTS.map((job) => {
           return (
             <div
-              key={job.id}
+              key={job._id}
               className="rounded-xl border border-border bg-card p-4"
             >
               {/* Title + actions */}
@@ -458,13 +348,6 @@ const ManageJobsPage = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>View applicants</DropdownMenuItem>
-                    <DropdownMenuItem>Mark as paused</DropdownMenuItem>
-                    <DropdownMenuItem>Duplicate post</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
-                      <Trash2 className="size-4!" />
-                      Delete
-                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -525,6 +408,7 @@ const ManageJobsPage = () => {
                   <Pencil className="size-3.5!" />
                   Update
                 </Button>
+
                 <Button
                   variant="outline"
                   size="icon"

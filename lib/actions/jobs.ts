@@ -24,3 +24,16 @@ export const createJob = async (jobData: IJobsType) => {
     });
     return response.json();
 }
+
+
+export const deleteJobs = async(jobId: string)=>{
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/jobs/${jobId}`,{
+        method: "DELETE",
+    });
+
+    if(!res.ok){
+        throw new Error("Failed to delete job");
+    }
+
+    return res.json();
+}
