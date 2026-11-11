@@ -1,5 +1,5 @@
-import React from "react";
-import Link from "next/link";
+import React from "react"
+import Link from "next/link"
 import {
   CircleDot,
   CodeXml,
@@ -14,16 +14,16 @@ import {
   ServerCog,
   Settings,
   Users,
-} from "lucide-react";
+} from "lucide-react"
 
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import {
   Table,
   TableBody,
@@ -31,19 +31,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { cn } from "cn";
-import { IJobsType } from "@/lib/actions/jobs";
-import { getJobs } from "@/lib/api/jobs";
-import { DeleteJobs } from "@/app/components/DeleteJobs";
+} from "@/components/ui/table"
+import { cn } from "cn"
+import { IJobsType } from "@/lib/actions/jobs"
+import { getJobs } from "@/lib/api/jobs"
+import { DeleteJobs } from "@/app/components/DeleteJobs"
 
-type JobStatus = "Active" | "Paused" | "Closed";
+type JobStatus = "Active" | "Paused" | "Closed"
 
 export interface IJobPostRow extends IJobsType {
-  _id: string;
-  applicants: number;
-  status: JobStatus;
-  postedAgo: string;
+  _id: string
+  applicants: number
+  status: JobStatus
+  postedAgo: string
 }
 
 const STATUS_STYLES: Record<JobStatus, { badge: string; dot: string }> = {
@@ -59,9 +59,12 @@ const STATUS_STYLES: Record<JobStatus, { badge: string; dot: string }> = {
     badge: "border-border bg-muted text-muted-foreground",
     dot: "bg-muted-foreground",
   },
-};
+}
 
-const CATEGORY_STYLES: Record<string,{ icon: React.ElementType; chip: string }> = {
+const CATEGORY_STYLES: Record<
+  string,
+  { icon: React.ElementType; chip: string }
+> = {
   engineering: {
     icon: CodeXml,
     chip: "bg-violet-500/10 text-violet-400",
@@ -82,21 +85,25 @@ const CATEGORY_STYLES: Record<string,{ icon: React.ElementType; chip: string }> 
     icon: Settings,
     chip: "bg-emerald-500/10 text-emerald-400",
   },
-};
+}
 
-const categoryStyle = (jobCategory: string) => CATEGORY_STYLES[Object.keys(CATEGORY_STYLES).find(key=>jobCategory.toLowerCase().includes(key)) ?? "engineering"] || { icon: CircleDot, chip: "bg-muted/10 text-muted-foreground"};
+const categoryStyle = (jobCategory: string) =>
+  CATEGORY_STYLES[
+    Object.keys(CATEGORY_STYLES).find((key) =>
+      jobCategory.toLowerCase().includes(key)
+    ) ?? "engineering"
+  ] || { icon: CircleDot, chip: "bg-muted/10 text-muted-foreground" }
 
-const frequencyLabel = (salaryFrequency: string) =>salaryFrequency.replace("per-", "").replace("month", "mo");
+const frequencyLabel = (salaryFrequency: string) =>
+  salaryFrequency.replace("per-", "").replace("month", "mo")
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-});
+  })
 
-
-  
 const COLUMNS = [
   "Job Title & Dept",
   "Company & Location",
@@ -106,26 +113,26 @@ const COLUMNS = [
   "Status",
   "Deadline",
   "Actions",
-] as const;
+] as const
 
 const StatusPill = ({ status }: { status: JobStatus }) => {
-  const style = STATUS_STYLES[status] ?? STATUS_STYLES.Closed;
+  const style = STATUS_STYLES[status] ?? STATUS_STYLES.Closed
   return (
     <span
-        className={cn(
-          "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
-          style.badge
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+        style.badge
       )}
     >
       <span className={cn("size-1.5 rounded-full", style.dot)} />
       {status ?? "Closed"}
     </span>
-  );
-};
+  )
+}
 
 /** Compact title + department cell content, shared by table and cards. */
 const JobTitleDept = ({ job }: { job: IJobPostRow }) => {
-  const { icon: Icon, chip } = categoryStyle(job.jobCategory);
+  const { icon: Icon, chip } = categoryStyle(job.jobCategory)
   return (
     <div className="flex items-center gap-3">
       <span
@@ -143,8 +150,8 @@ const JobTitleDept = ({ job }: { job: IJobPostRow }) => {
         <p className="text-xs text-muted-foreground">{job.jobCategory}</p>
       </div>
     </div>
-  );
-};
+  )
+}
 
 /** Company + location cell content. */
 const CompanyLocation = ({ job }: { job: IJobPostRow }) => (
@@ -161,10 +168,10 @@ const CompanyLocation = ({ job }: { job: IJobPostRow }) => (
       </span>
     </div>
   </div>
-);
+)
 
-const ManageJobsPage = async() => {
-  const JOB_POSTS: IJobPostRow[] = await getJobs();
+const ManageJobsPage = async () => {
+  const JOB_POSTS: IJobPostRow[] = await getJobs()
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -212,7 +219,11 @@ const ManageJobsPage = async() => {
               {COLUMNS.map((column, index) => (
                 <TableHead
                   key={column}
-                  className={cn(index === 0 && "pl-4 sm:pl-5",column === "Actions" && "pr-4 text-right sm:pr-5" )}>
+                  className={cn(
+                    index === 0 && "pl-4 sm:pl-5",
+                    column === "Actions" && "pr-4 text-right sm:pr-5"
+                  )}
+                >
                   {column}
                 </TableHead>
               ))}
@@ -284,13 +295,15 @@ const ManageJobsPage = async() => {
                 {/* Actions */}
                 <TableCell className="pr-4 text-right sm:pr-5">
                   <div className="flex items-center justify-end gap-1.5">
-                    <Button
-                      size="sm"
-                      className="h-7 gap-1.5 rounded-md bg-violet-600 px-2.5 text-xs text-white hover:bg-violet-500"
-                    >
-                      <Pencil className="size-3.5!" />
-                      Update
-                    </Button>
+                    <Link href={`/dashboard/recruiter/jobs/${job._id}`}>
+                      <Button
+                        size="sm"
+                        className="h-7 cursor-pointer gap-1.5 rounded-md bg-violet-600 px-2.5 text-xs text-white hover:bg-violet-500"
+                      >
+                        <Pencil className="size-3.5!" />
+                        Update
+                      </Button>
+                    </Link>
 
                     <DeleteJobs job={job} />
 
@@ -311,8 +324,6 @@ const ManageJobsPage = async() => {
                         <DropdownMenuItem>View applicants</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-
-
                   </div>
                 </TableCell>
               </TableRow>
@@ -411,11 +422,11 @@ const ManageJobsPage = async() => {
                 <DeleteJobs job={job} />
               </div>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ManageJobsPage;
+export default ManageJobsPage

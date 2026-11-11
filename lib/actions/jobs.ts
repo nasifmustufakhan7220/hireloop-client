@@ -1,7 +1,8 @@
 type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
 type JobStatus =  "Active" | "Paused" | "Closed";
 export interface IJobsType{
-    jobTitle: string;
+      _id?: string;
+      jobTitle: string;
       companyName: string;
       jobCategory: string;
       jobType: JobTypes;
