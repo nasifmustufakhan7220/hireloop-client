@@ -14,8 +14,8 @@ export interface IJobsType{
       salaryFrequency: string;
       responsibilities: string;
       qualifications: string;
-      applicants?: number;
-      status?: JobStatus;
+      applicants: number;
+      status: JobStatus;
       postedAgo?: string;
 }
 

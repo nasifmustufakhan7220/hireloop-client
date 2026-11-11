@@ -1,9 +1,9 @@
+
 import React from "react"
 import Link from "next/link"
 import {
   CircleDot,
   CodeXml,
-  EllipsisVertical,
   Globe,
   MapPin,
   Megaphone,
@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import { cn } from "cn"
 import { IJobsType } from "@/lib/actions/jobs"
 import { getJobs } from "@/lib/api/jobs"
@@ -41,12 +42,10 @@ type JobStatus = "Active" | "Paused" | "Closed"
 
 export interface IJobPostRow extends IJobsType {
   _id: string
-  applicants: number
-  status: JobStatus
   postedAgo: string
 }
 
-const STATUS_STYLES: Record<JobStatus, { badge: string; dot: string }> = {
+const STATUS_STYLES: Record<JobStatus,{ badge: string; dot: string }> = {
   Active: {
     badge: "border-emerald-500/25 bg-emerald-500/10 text-emerald-400",
     dot: "bg-emerald-400",
@@ -61,10 +60,7 @@ const STATUS_STYLES: Record<JobStatus, { badge: string; dot: string }> = {
   },
 }
 
-const CATEGORY_STYLES: Record<
-  string,
-  { icon: React.ElementType; chip: string }
-> = {
+const CATEGORY_STYLES: Record<string,{ icon: React.ElementType; chip: string }> = {
   engineering: {
     icon: CodeXml,
     chip: "bg-violet-500/10 text-violet-400",
@@ -92,7 +88,10 @@ const categoryStyle = (jobCategory: string) =>
     Object.keys(CATEGORY_STYLES).find((key) =>
       jobCategory.toLowerCase().includes(key)
     ) ?? "engineering"
-  ] || { icon: CircleDot, chip: "bg-muted/10 text-muted-foreground" }
+  ] || {
+    icon: CircleDot,
+    chip: "bg-muted/10 text-muted-foreground",
+  }
 
 const frequencyLabel = (salaryFrequency: string) =>
   salaryFrequency.replace("per-", "").replace("month", "mo")
@@ -115,12 +114,14 @@ const COLUMNS = [
   "Actions",
 ] as const
 
+// Status component
 const StatusPill = ({ status }: { status: JobStatus }) => {
   const style = STATUS_STYLES[status] ?? STATUS_STYLES.Closed
+
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium",
+        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium whitespace-nowrap",
         style.badge
       )}
     >
@@ -130,11 +131,12 @@ const StatusPill = ({ status }: { status: JobStatus }) => {
   )
 }
 
-/** Compact title + department cell content, shared by table and cards. */
+// Job title and category
 const JobTitleDept = ({ job }: { job: IJobPostRow }) => {
   const { icon: Icon, chip } = categoryStyle(job.jobCategory)
+
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex min-w-0 items-center gap-3">
       <span
         className={cn(
           "flex size-8 shrink-0 items-center justify-center rounded-md",
@@ -143,31 +145,101 @@ const JobTitleDept = ({ job }: { job: IJobPostRow }) => {
       >
         <Icon className="size-4" />
       </span>
+
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">
           {job.jobTitle}
         </p>
-        <p className="text-xs text-muted-foreground">{job.jobCategory}</p>
+        <p className="truncate text-xs text-muted-foreground">
+          {job.jobCategory}
+        </p>
       </div>
     </div>
   )
 }
 
-/** Company + location cell content. */
+// Company and location
 const CompanyLocation = ({ job }: { job: IJobPostRow }) => (
-  <div>
-    <p className="text-sm font-medium text-foreground">{job.companyName}</p>
-    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+  <div className="min-w-0">
+    <p className="truncate text-sm font-medium text-foreground">
+      {job.companyName}
+    </p>
+
+    <div className="mt-0.5 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
       {job.remoteWork ? (
         <Globe className="size-3.5 shrink-0" />
       ) : (
         <MapPin className="size-3.5 shrink-0" />
       )}
+
       <span className="truncate">
-        {job.remoteWork ? `Remote (${job.jobLocation})` : job.jobLocation}
+        {job.remoteWork
+          ? `Remote (${job.jobLocation})`
+          : job.jobLocation}
       </span>
     </div>
   </div>
+)
+
+// Applicants
+const ApplicantsCount = ({
+  applicants,
+}: {
+  applicants: number
+}) => (
+  <div className="flex items-center gap-2 text-sm">
+    <Users className="size-4 shrink-0 text-violet-400" />
+    <span className="font-medium">{applicants}</span>
+    <span className="text-muted-foreground">Candidates</span>
+  </div>
+)
+
+// Compensation
+const Compensation = ({ job }: { job: IJobPostRow }) => (
+  <div className="min-w-0">
+    <p className="truncate text-sm font-medium text-foreground">
+      €{job.minSalary} – €{job.maxSalary}
+    </p>
+    <p className="text-xs text-muted-foreground">
+      {frequencyLabel(job.salaryFrequency)}
+    </p>
+  </div>
+)
+
+// Update button
+const UpdateJobButton = ({ job }: { job: IJobPostRow }) => (
+  <Link
+    href={`/dashboard/recruiter/jobs/${job._id}`}
+    className={cn(
+      buttonVariants({ size: "sm" }),
+      "h-8 gap-1.5 rounded-md bg-violet-600 px-2.5 text-xs text-white hover:bg-violet-500"
+    )}
+  >
+    <Pencil className="size-3.5" />
+    Update
+  </Link>
+)
+
+// More actions dropdown
+const JobActions = () => (
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      render={
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="More actions"
+          className="text-muted-foreground hover:text-foreground"
+        />
+      }
+    >
+      <MoreVertical className="size-4" />
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent align="end">
+      <DropdownMenuItem>View applicants</DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
 )
 
 const ManageJobsPage = async () => {
@@ -175,6 +247,7 @@ const ManageJobsPage = async () => {
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+
       {/* Breadcrumb */}
       <p className="mb-1 text-xs text-muted-foreground">
         <Link
@@ -183,16 +256,21 @@ const ManageJobsPage = async () => {
         >
           Manage Jobs
         </Link>
+
         <span className="mx-1">&rsaquo;</span>
-        <span className="text-foreground">Job Listings &amp; Postings</span>
+
+        <span className="text-foreground">
+          Job Listings &amp; Postings
+        </span>
       </p>
 
-      {/* Page header */}
+      {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Manage Job Posts
           </h1>
+
           <p className="mt-1 text-sm text-muted-foreground">
             Review live listings, monitor applicants, and update job details
             across your organization.
@@ -206,22 +284,30 @@ const ManageJobsPage = async () => {
             "w-full gap-2 bg-violet-600 text-white hover:bg-violet-500 sm:w-auto"
           )}
         >
-          <Plus className="size-4!" />
+          <Plus className="size-4" />
           New Job Post
         </Link>
       </div>
 
-      {/* ================= Desktop / tablet table ================= */}
-      <div className="mt-6 hidden overflow-hidden rounded-xl border border-border bg-card md:block">
-        <Table>
+      {/* ================= DESKTOP TABLE ================= */}
+      <div className="mt-6 hidden w-full overflow-hidden rounded-xl border border-border bg-card xl:block">
+        <Table className="w-full table-fixed">
+
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
               {COLUMNS.map((column, index) => (
                 <TableHead
                   key={column}
                   className={cn(
-                    index === 0 && "pl-4 sm:pl-5",
-                    column === "Actions" && "pr-4 text-right sm:pr-5"
+                    "overflow-hidden text-xs",
+                    index === 0 && "w-[19%] pl-4",
+                    index === 1 && "w-[16%]",
+                    index === 2 && "w-[9%]",
+                    index === 3 && "w-[12%]",
+                    index === 4 && "w-[12%]",
+                    index === 5 && "w-[9%]",
+                    index === 6 && "w-[12%]",
+                    index === 7 && "w-[12%] pr-3 text-right"
                   )}
                 >
                   {column}
@@ -233,41 +319,35 @@ const ManageJobsPage = async () => {
           <TableBody>
             {JOB_POSTS.map((job) => (
               <TableRow key={job._id}>
-                {/* Job title & dept */}
-                <TableCell className="pl-4 sm:pl-5">
+
+                {/* Job Title */}
+                <TableCell className="overflow-hidden pl-4">
                   <JobTitleDept job={job} />
                 </TableCell>
 
-                {/* Company & location */}
-                <TableCell>
+                {/* Company */}
+                <TableCell className="overflow-hidden">
                   <CompanyLocation job={job} />
                 </TableCell>
 
                 {/* Type */}
-                <TableCell>
-                  <Badge variant="secondary" className="font-normal">
+                <TableCell className="overflow-hidden">
+                  <Badge
+                    variant="secondary"
+                    className="max-w-full truncate text-xs font-normal"
+                  >
                     {job.jobType}
                   </Badge>
                 </TableCell>
 
                 {/* Compensation */}
-                <TableCell>
-                  <span className="text-sm font-medium text-foreground">
-                    €{job.minSalary} – €{job.maxSalary}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {" "}
-                    / {frequencyLabel(job.salaryFrequency)}
-                  </span>
+                <TableCell className="overflow-hidden">
+                  <Compensation job={job} />
                 </TableCell>
 
                 {/* Applicants */}
-                <TableCell>
-                  <span className="flex items-center gap-2 text-sm">
-                    <Users className="size-4 shrink-0 text-violet-400" />
-                    <span className="font-medium">{job.applicants}</span>
-                    <span className="text-muted-foreground">Candidates</span>
-                  </span>
+                <TableCell className="overflow-hidden">
+                  <ApplicantsCount applicants={job.applicants} />
                 </TableCell>
 
                 {/* Status */}
@@ -276,155 +356,116 @@ const ManageJobsPage = async () => {
                 </TableCell>
 
                 {/* Deadline */}
-                <TableCell>
-                  <p className="text-sm text-foreground">
+                <TableCell className="overflow-hidden">
+                  <p className="truncate text-sm text-foreground">
                     {formatDate(job.deadline)}
                   </p>
-                  <p
-                    className={cn(
-                      "mt-0.5 text-xs",
-                      job.status === "Closed"
-                        ? "text-muted-foreground/70"
-                        : "text-muted-foreground"
-                    )}
-                  >
+                  <p className="truncate text-xs text-muted-foreground">
                     {job.postedAgo}
                   </p>
                 </TableCell>
 
                 {/* Actions */}
-                <TableCell className="pr-4 text-right sm:pr-5">
-                  <div className="flex items-center justify-end gap-1.5">
-                    <Link href={`/dashboard/recruiter/jobs/${job._id}`}>
-                      <Button
-                        size="sm"
-                        className="h-7 cursor-pointer gap-1.5 rounded-md bg-violet-600 px-2.5 text-xs text-white hover:bg-violet-500"
-                      >
-                        <Pencil className="size-3.5!" />
-                        Update
-                      </Button>
-                    </Link>
-
+                <TableCell className="pr-3">
+                  <div className="flex items-center justify-end gap-1">
+                    <UpdateJobButton job={job} />
                     <DeleteJobs job={job} />
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label="More actions"
-                            className="text-muted-foreground hover:text-foreground"
-                          />
-                        }
-                      >
-                        <MoreVertical className="size-4!" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View applicants</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <JobActions />
                   </div>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
 
-      {/* ================= Mobile stacked cards ================= */}
-      <div className="mt-6 flex flex-col gap-3 md:hidden">
-        {JOB_POSTS.map((job) => {
-          return (
-            <div
-              key={job._id}
-              className="rounded-xl border border-border bg-card p-4"
-            >
-              {/* Title + actions */}
-              <div className="flex items-start justify-between gap-2">
-                <JobTitleDept job={job} />
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label="More actions"
-                        className="-mt-1 -mr-1 text-muted-foreground hover:text-foreground"
-                      />
-                    }
-                  >
-                    <EllipsisVertical className="size-4!" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View applicants</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+      {/* ================= RESPONSIVE JOB CARDS ================= */}
+      <div className="mt-6 flex flex-col gap-3 xl:hidden">
 
-              {/* Company + location */}
-              <div className="mt-3">
-                <CompanyLocation job={job} />
-              </div>
+        {JOB_POSTS.map((job) => (
+          <div
+            key={job._id}
+            className="min-w-0 rounded-xl border border-border bg-card p-4"
+          >
 
-              {/* Type / status / applicants */}
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Badge variant="secondary" className="font-normal">
-                  {job.jobType}
-                </Badge>
-                <StatusPill status={job.status} />
-                <span className="ml-auto flex items-center gap-2 text-sm">
-                  <Users className="size-4 shrink-0 text-violet-400" />
-                  <span className="font-medium">{job.applicants}</span>
-                  <span className="text-muted-foreground">Candidates</span>
-                </span>
-              </div>
+            {/* Title + Actions */}
+            <div className="flex items-start justify-between gap-2">
+              <JobTitleDept job={job} />
 
-              {/* Compensation / deadline */}
-              <div className="mt-3 grid grid-cols-2 gap-3 rounded-lg bg-muted/40 p-3">
-                <div>
-                  <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                    Compensation
-                  </p>
-                  <p className="mt-0.5 text-sm">
-                    <span className="font-medium text-foreground">
-                      €{job.minSalary} – €{job.maxSalary}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {" "}
-                      / {frequencyLabel(job.salaryFrequency)}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                    Deadline
-                  </p>
-                  <p className="mt-0.5 text-sm text-foreground">
-                    {formatDate(job.deadline)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {job.postedAgo}
-                  </p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="mt-3 flex items-center gap-2">
-                <Button
-                  size="sm"
-                  className="h-8 flex-1 gap-1.5 bg-violet-600 text-white hover:bg-violet-500"
-                >
-                  <Pencil className="size-3.5!" />
-                  Update
-                </Button>
-
-                <DeleteJobs job={job} />
+              <div className="flex shrink-0 items-center gap-1">
+                <UpdateJobButton job={job} />
+                <JobActions />
               </div>
             </div>
-          )
-        })}
+
+            {/* Company + Location */}
+            <div className="mt-3 min-w-0">
+              <CompanyLocation job={job} />
+            </div>
+
+            {/* Job Type + Status */}
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="font-normal">
+                {job.jobType}
+              </Badge>
+
+              <StatusPill status={job.status} />
+
+              <div className="ml-auto">
+                <ApplicantsCount applicants={job.applicants} />
+              </div>
+            </div>
+
+            {/* Compensation + Deadline */}
+            <div className="mt-3 grid grid-cols-2 gap-3 rounded-lg bg-muted/40 p-3">
+
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+                  Compensation
+                </p>
+
+                <div className="mt-1">
+                  <Compensation job={job} />
+                </div>
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+                  Deadline
+                </p>
+
+                <p className="mt-1 truncate text-sm text-foreground">
+                  {formatDate(job.deadline)}
+                </p>
+
+                <p className="truncate text-xs text-muted-foreground">
+                  {job.postedAgo}
+                </p>
+              </div>
+
+            </div>
+
+            {/* Delete Action */}
+            <div className="mt-3 flex justify-end">
+              <DeleteJobs job={job} />
+            </div>
+
+          </div>
+        ))}
+
       </div>
+
+      {/* Empty State */}
+      {JOB_POSTS.length === 0 && (
+        <div className="mt-6 rounded-xl border border-border bg-card p-10 text-center">
+          <p className="font-medium">No jobs found</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Create your first job post to get started.
+          </p>
+        </div>
+      )}
+
     </div>
   )
 }

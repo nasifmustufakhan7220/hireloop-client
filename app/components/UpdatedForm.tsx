@@ -43,6 +43,8 @@ const UpdatedForm = ({ job }: { job: IJobsType }) => {
       salaryFrequency: updatedJobData.salaryFrequency,
       responsibilities: updatedJobData.responsibilities,
       qualifications: updatedJobData.qualifications,
+      applicants: job.applicants,
+      status: job.status,
     }
 
     const result = await updateJob(job._id as string, data);

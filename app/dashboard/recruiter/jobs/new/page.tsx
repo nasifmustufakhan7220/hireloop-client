@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createJob, IJobsType } from "@/lib/actions/jobs";
+import { toast } from "@/components/ui/toast";
 
 
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"];
@@ -54,10 +55,17 @@ const AddJobPage = () => {
       salaryFrequency: form.salaryFrequency,
       responsibilities: form.responsibilities,
       qualifications: form.qualifications,
+      applicants: 10,
+      status: "Active"
     };
 
-    const result = await createJob({...data, applicants: 10, status: "Active", postedAgo: "1 day ago"});
-    console.log("Job created:", result);
+    const result = await createJob({...data, postedAgo: "1 day ago"});
+    if( result.insertedId){
+      toast.add({
+        title: "Job Created",
+        description: "The job has been created successfully.",
+      });
+    }
   };
 
   return (
