@@ -10,17 +10,16 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { IJobsType, updateJob } from "@/lib/actions/jobs"
+import { updateJob } from "@/lib/actions/jobs"
+import { JOB_TYPES, type Job, type JobType, type SalaryFrequency } from "@/lib/types/jobs"
 import { ArrowRight, Building2, Calendar, Globe, MapPin } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
 import { useRouter } from "next/navigation"
-const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"]
-type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship"
 
-const UpdatedForm = ({ job }: { job: IJobsType }) => {
-  const [jobS, setJobS] = useState(job.jobType as string);
+const UpdatedForm = ({ job }: { job: Job }) => {
+  const [jobS, setJobS] = useState<JobType>(job.jobType);
   const router = useRouter();
   const [remote, setRemote] = useState(job.remoteWork);
   const handelUpdateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,17 +29,17 @@ const UpdatedForm = ({ job }: { job: IJobsType }) => {
       string,
       string
     >
-    const data: IJobsType = {
+    const data: Job = {
       jobTitle: updatedJobData.jobTitle,
       companyName: updatedJobData.companyName,
       jobCategory: updatedJobData.jobCategory,
-      jobType: updatedJobData.jobType as JobTypes,
+      jobType: updatedJobData.jobType as JobType,
       remoteWork: updatedJobData.remoteWork === "on" ? true : false,
       jobLocation: updatedJobData.jobLocation,
       deadline: updatedJobData.deadline,
       minSalary: updatedJobData.minSalary,
       maxSalary: updatedJobData.maxSalary,
-      salaryFrequency: updatedJobData.salaryFrequency,
+      salaryFrequency: updatedJobData.salaryFrequency as SalaryFrequency,
       responsibilities: updatedJobData.responsibilities,
       qualifications: updatedJobData.qualifications,
       applicants: job.applicants,
@@ -111,7 +110,7 @@ const UpdatedForm = ({ job }: { job: IJobsType }) => {
               >
                 Job Category *
               </Label>
-              <Select name="jobCategory" defaultValue={job.jobCategory}>
+              <Select name="jobCategory" value={jobS as JobType} onValueChange={(value) => setJobS(value as JobType)}>
                 <SelectTrigger id="job-category" className="h-9 w-full">
                   <SelectValue />
                 </SelectTrigger>

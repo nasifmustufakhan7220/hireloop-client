@@ -1,6 +1,7 @@
 import UpdatedForm from "@/app/components/UpdatedForm"
 import { getJobs } from "@/lib/api/jobs"
-import { IJobsType } from "@/lib/actions/jobs"
+import type { JobPost } from "@/lib/types/jobs"
+import { notFound } from "next/navigation"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,7 +19,10 @@ const UpdatedJobsPage = async ({
 }) => {
   const { id } = await params
   const data = await getJobs()
-  const job = data.find((j: IJobsType) => j._id === id)
+  const job = data.find((j: JobPost) => j._id === id)
+  if (!job) {
+    notFound()
+  }
   return (
     <div className="space-y-4 px-4 sm:px-6 lg:px-8 mb-20">
 

@@ -22,28 +22,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createJob, IJobsType } from "@/lib/actions/jobs";
-import { toast } from "@/components/ui/toast";
-
-
-const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"];
-type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
-
+import { createJob } from "@/lib/actions/jobs"
+import { JOB_TYPES, type Job, type JobType, type SalaryFrequency } from "@/lib/types/jobs"
+import { toast } from "@/components/ui/toast"
+import { useRouter } from "next/navigation";
 
 const AddJobPage = () => {
 
-  const [job, setJob] = useState("Full-time");
+  const [job, setJob] = useState<JobType>("Full-time");
+  const router = useRouter();
 
   const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const newFormData = new FormData(event.currentTarget);
     const form = Object.fromEntries(newFormData.entries()) as Record< string,string>;
 
-    const data:IJobsType = {
+    const data: Job = {
       jobTitle: form.jobTitle,
       companyName: form.companyName,
       jobCategory: form.jobCategory,
-      jobType: form.jobType as JobTypes,
+      jobType: form.jobType as JobType,
 
       // FormData gives: OFF = undefined, ON = the string "on"
       // So: is it "on"?  → true : false
@@ -52,7 +50,7 @@ const AddJobPage = () => {
       deadline: form.deadline,
       minSalary: form.minSalary,
       maxSalary: form.maxSalary,
-      salaryFrequency: form.salaryFrequency,
+      salaryFrequency: form.salaryFrequency as SalaryFrequency,
       responsibilities: form.responsibilities,
       qualifications: form.qualifications,
       applicants: 10,
@@ -60,11 +58,12 @@ const AddJobPage = () => {
     };
 
     const result = await createJob({...data, postedAgo: "1 day ago"});
-    if( result.insertedId){
+    if(result.insertedId){
       toast.add({
         title: "Job Created",
         description: "The job has been created successfully.",
       });
+      router.push("/dashboard/recruiter/jobs");
     }
   };
 

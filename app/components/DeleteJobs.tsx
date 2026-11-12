@@ -14,13 +14,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { IJobPostRow } from "../dashboard/recruiter/jobs/page"
+import type { JobPost } from "@/lib/types/jobs"
 import { deleteJobs } from "@/lib/actions/jobs"
 import { toast } from "@/components/ui/toast"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-export function DeleteJobs({ job }: { job: IJobPostRow }) {
+export function DeleteJobs({ job }: { job: JobPost }) {
     const [open, setOpen] = useState(false);
     const router = useRouter();
   const handleDelete = async () => {

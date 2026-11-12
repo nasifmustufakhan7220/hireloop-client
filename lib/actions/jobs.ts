@@ -1,25 +1,6 @@
-type JobTypes = "Full-time" | "Part-time" | "Contract" | "Internship";
-type JobStatus =  "Active" | "Paused" | "Closed";
-export interface IJobsType{
-      _id?: string;
-      jobTitle: string;
-      companyName: string;
-      jobCategory: string;
-      jobType: JobTypes;
-      remoteWork: boolean;
-      jobLocation: string;
-      deadline: string;
-      minSalary: string;
-      maxSalary: string;
-      salaryFrequency: string;
-      responsibilities: string;
-      qualifications: string;
-      applicants: number;
-      status: JobStatus;
-      postedAgo?: string;
-}
+import type { Job } from "@/lib/types/jobs";
 
-export const createJob = async (jobData: IJobsType) => {
+export const createJob = async (jobData: Job) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/jobs`, {
         method: "POST",
         headers: {
@@ -27,6 +8,9 @@ export const createJob = async (jobData: IJobsType) => {
         },
         body: JSON.stringify(jobData)
     });
+    if(!response.ok){
+        throw new Error("Failed to create job");
+    }
     return response.json();
 }
 
@@ -43,7 +27,7 @@ export const deleteJobs = async(jobId: string)=>{
     return res.json();
 }
 
-export const updateJob = async(jobID: string, jobData:IJobsType)=>{
+export const updateJob = async(jobID: string, jobData: Job)=>{
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/jobs/${jobID}`,{
         method: "PATCH",
         headers: {

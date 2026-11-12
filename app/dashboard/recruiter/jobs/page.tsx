@@ -34,16 +34,9 @@ import {
 } from "@/components/ui/table"
 
 import { cn } from "cn"
-import { IJobsType } from "@/lib/actions/jobs"
 import { getJobs } from "@/lib/api/jobs"
 import { DeleteJobs } from "@/app/components/DeleteJobs"
-
-type JobStatus = "Active" | "Paused" | "Closed"
-
-export interface IJobPostRow extends IJobsType {
-  _id: string
-  postedAgo: string
-}
+import type { JobPost, JobStatus } from "@/lib/types/jobs"
 
 const STATUS_STYLES: Record<JobStatus,{ badge: string; dot: string }> = {
   Active: {
@@ -132,7 +125,7 @@ const StatusPill = ({ status }: { status: JobStatus }) => {
 }
 
 // Job title and category
-const JobTitleDept = ({ job }: { job: IJobPostRow }) => {
+const JobTitleDept = ({ job }: { job: JobPost }) => {
   const { icon: Icon, chip } = categoryStyle(job.jobCategory)
 
   return (
@@ -159,7 +152,7 @@ const JobTitleDept = ({ job }: { job: IJobPostRow }) => {
 }
 
 // Company and location
-const CompanyLocation = ({ job }: { job: IJobPostRow }) => (
+const CompanyLocation = ({ job }: { job: JobPost }) => (
   <div className="min-w-0">
     <p className="truncate text-sm font-medium text-foreground">
       {job.companyName}
@@ -195,7 +188,7 @@ const ApplicantsCount = ({
 )
 
 // Compensation
-const Compensation = ({ job }: { job: IJobPostRow }) => (
+const Compensation = ({ job }: { job: JobPost }) => (
   <div className="min-w-0">
     <p className="truncate text-sm font-medium text-foreground">
       €{job.minSalary} – €{job.maxSalary}
@@ -207,7 +200,7 @@ const Compensation = ({ job }: { job: IJobPostRow }) => (
 )
 
 // Update button
-const UpdateJobButton = ({ job }: { job: IJobPostRow }) => (
+const UpdateJobButton = ({ job }: { job: JobPost }) => (
   <Link
     href={`/dashboard/recruiter/jobs/${job._id}`}
     className={cn(
@@ -243,7 +236,7 @@ const JobActions = () => (
 )
 
 const ManageJobsPage = async () => {
-  const JOB_POSTS: IJobPostRow[] = await getJobs()
+  const JOB_POSTS: JobPost[] = await getJobs()
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">

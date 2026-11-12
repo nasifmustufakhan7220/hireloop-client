@@ -25,8 +25,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
-type Role = "seeker" | "recruiter" | "admin"
+import type { Role } from "@/lib/types/auth"
 
 type MenuType = {
   id: string

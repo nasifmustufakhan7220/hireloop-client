@@ -5,14 +5,14 @@ import { PasswordInput } from "@/components/auth/password-input"
 import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
+import type { Role } from "@/lib/types/auth"
+import type { LucideIcon } from "lucide-react"
 
-const ROLES = [
-  { value: "seeker" as const, label: "Job Seeker", icon: Search },
-  { value: "recruiter" as const, label: "Recruiter", icon: Building2 },
-  { value: "admin" as const, label: "Admin", icon: ShieldCheck },
+const ROLES: { value: Role; label: string; icon: LucideIcon }[] = [
+  { value: "seeker", label: "Job Seeker", icon: Search },
+  { value: "recruiter", label: "Recruiter", icon: Building2 },
+  { value: "admin", label: "Admin", icon: ShieldCheck },
 ]
-
-type Role = (typeof ROLES)[number]["value"]
 
 const SignUpForm = () => {
   const router = useRouter();
