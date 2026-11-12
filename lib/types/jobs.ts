@@ -4,6 +4,15 @@
 export const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship"] as const;
 export type JobType = (typeof JOB_TYPES)[number];
 
+export const JOB_CATEGORIES = [
+  { value: "engineering-tech", label: "Engineering & Tech" },
+  { value: "design-creative", label: "Design & Creative" },
+  { value: "marketing", label: "Marketing" },
+  { value: "sales", label: "Sales" },
+  { value: "customer-support", label: "Customer Support" },
+] as const;
+export type JobCategory = (typeof JOB_CATEGORIES)[number]["value"];
+
 export const JOB_STATUSES = ["Active", "Paused", "Closed"] as const;
 export type JobStatus = (typeof JOB_STATUSES)[number];
 
@@ -14,7 +23,7 @@ export interface Job {
   _id?: string;
   jobTitle: string;
   companyName: string;
-  jobCategory: string;
+  jobCategory: JobCategory;
   jobType: JobType;
   remoteWork: boolean;
   jobLocation: string;

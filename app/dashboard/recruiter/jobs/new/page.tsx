@@ -23,7 +23,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createJob } from "@/lib/actions/jobs"
-import { JOB_TYPES, type Job, type JobType, type SalaryFrequency } from "@/lib/types/jobs"
+import {
+  JOB_CATEGORIES,
+  JOB_TYPES,
+  type Job,
+  type JobCategory,
+  type JobType,
+  type SalaryFrequency,
+} from "@/lib/types/jobs"
 import { toast } from "@/components/ui/toast"
 import { useRouter } from "next/navigation";
 
@@ -40,7 +47,7 @@ const AddJobPage = () => {
     const data: Job = {
       jobTitle: form.jobTitle,
       companyName: form.companyName,
-      jobCategory: form.jobCategory,
+      jobCategory: form.jobCategory as JobCategory,
       jobType: form.jobType as JobType,
 
       // FormData gives: OFF = undefined, ON = the string "on"
@@ -161,17 +168,11 @@ const AddJobPage = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="engineering-tech">
-                    Engineering &amp; Tech
-                  </SelectItem>
-                  <SelectItem value="design-creative">
-                    Design &amp; Creative
-                  </SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="customer-support">
-                    Customer Support
-                  </SelectItem>
+                  {JOB_CATEGORIES.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

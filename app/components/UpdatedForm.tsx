@@ -11,7 +11,14 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { updateJob } from "@/lib/actions/jobs"
-import { JOB_TYPES, type Job, type JobType, type SalaryFrequency } from "@/lib/types/jobs"
+import {
+  JOB_CATEGORIES,
+  JOB_TYPES,
+  type Job,
+  type JobCategory,
+  type JobType,
+  type SalaryFrequency,
+} from "@/lib/types/jobs"
 import { ArrowRight, Building2, Calendar, Globe, MapPin } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -32,7 +39,7 @@ const UpdatedForm = ({ job }: { job: Job }) => {
     const data: Job = {
       jobTitle: updatedJobData.jobTitle,
       companyName: updatedJobData.companyName,
-      jobCategory: updatedJobData.jobCategory,
+      jobCategory: updatedJobData.jobCategory as JobCategory,
       jobType: updatedJobData.jobType as JobType,
       remoteWork: updatedJobData.remoteWork === "on" ? true : false,
       jobLocation: updatedJobData.jobLocation,
@@ -115,17 +122,11 @@ const UpdatedForm = ({ job }: { job: Job }) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="engineering-tech">
-                    Engineering &amp; Tech
-                  </SelectItem>
-                  <SelectItem value="design-creative">
-                    Design &amp; Creative
-                  </SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="customer-support">
-                    Customer Support
-                  </SelectItem>
+                  {JOB_CATEGORIES.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
