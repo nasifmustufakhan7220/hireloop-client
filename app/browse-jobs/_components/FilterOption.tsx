@@ -1,6 +1,8 @@
+"use client"
 import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 type FilterOptionProps = {
   /** Form field name, e.g. "jobType" */
@@ -29,7 +31,17 @@ export function FilterOption({
   onToggle,
   className,
 }: FilterOptionProps) {
-  const isControlled = checked !== undefined
+  const router = useRouter();
+  const isControlled = checked !== undefined;
+  const onChangeFilters = (e: React.ChangeEvent<HTMLInputElement>)=>{
+    console.log(name,e.target.value);
+
+    const params = new URLSearchParams(window.location.search);
+    params.set(name, e.target.value);
+    router.push(`browse-jobs?${params.toString()}`);
+
+
+  }
 
   return (
     <label
@@ -44,6 +56,7 @@ export function FilterOption({
         value={value ?? label}
         {...(isControlled ? { checked, onChange: onToggle } : {})}
         className="peer sr-only"
+        onChange={onChangeFilters}
       />
       {/* Custom option box, styled via the peer input */}
       <span
