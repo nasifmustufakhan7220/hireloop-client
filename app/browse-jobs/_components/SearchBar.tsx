@@ -4,11 +4,20 @@ import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 export function SearchBar({ className }: { className?: string }) {
+  const router = useRouter();
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // TODO: build the query from the form and apply the search
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+    const search = data.searchField;
+
+    const params = new URLSearchParams();
+    params.set('search', search as string);
+    router.push(`/browse-jobs?${params.toString()}`);
+
   }
 
   return (
@@ -19,7 +28,7 @@ export function SearchBar({ className }: { className?: string }) {
       <div className="relative min-w-0 flex-1">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          name="q"
+          name="searchField"
           type="search"
           placeholder="Search by job title, company, or location..."
           className="h-10 pl-9 sm:h-12"
