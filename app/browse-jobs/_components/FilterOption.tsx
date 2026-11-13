@@ -34,11 +34,11 @@ export function FilterOption({
   const router = useRouter();
   const isControlled = checked !== undefined;
   const onChangeFilters = (e: React.ChangeEvent<HTMLInputElement>)=>{
-    console.log(name,e.target.value);
+    onToggle?.();
 
     const params = new URLSearchParams(window.location.search);
     params.set(name, e.target.value);
-    router.push(`browse-jobs?${params.toString()}`);
+    router.push(`/browse-jobs?${params.toString()}`);
 
 
   }
@@ -54,9 +54,8 @@ export function FilterOption({
         type="checkbox"
         name={name}
         value={value ?? label}
-        {...(isControlled ? { checked, onChange: onToggle } : {})}
+        {...(isControlled ? { checked, onChange: onChangeFilters } : {})}
         className="peer sr-only"
-        onChange={onChangeFilters}
       />
       {/* Custom option box, styled via the peer input */}
       <span

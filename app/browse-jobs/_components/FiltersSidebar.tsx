@@ -1,7 +1,5 @@
 import { JOB_CATEGORIES, JOB_TYPES } from "@/lib/types/jobs"
 
-import { FilterGroup } from "./FilterGroup"
-import { FilterOption } from "./FilterOption"
 import { FilterSingleSelectGroup } from "./FilterSingleSelectGroup"
 
 type FiltersSidebarProps = {
@@ -18,6 +16,7 @@ export function FiltersSidebar({
   categoryCounts,
   remoteCount,
 }: FiltersSidebarProps) {
+
   const jobTypeOptions = JOB_TYPES.map((type) => ({
     value: type,
     label: type,
@@ -29,6 +28,17 @@ export function FiltersSidebar({
     label: category.label,
     count: categoryCounts[category.value],
   }))
+
+  // Work mode is a boolean on the Job type (remoteWork), so it has one option.
+  // As a single-select group it behaves like a checkbox: select on first
+  // click, clear on a second click.
+  const workModeOptions = [
+    {
+      value: "true",
+      label: "Remote only",
+      count: remoteCount,
+    },
+  ]
 
   return (
     <aside className="h-fit rounded-xl border border-border bg-card p-5 lg:sticky lg:top-6">
@@ -47,14 +57,11 @@ export function FiltersSidebar({
           options={jobCategoryOptions}
         />
 
-        <FilterGroup title="Work Mode">
-          <FilterOption
-            name="remoteWork"
-            value="true"
-            label="Remote only"
-            count={remoteCount}
-          />
-        </FilterGroup>
+        <FilterSingleSelectGroup
+          title="Work Mode"
+          name="remoteWork"
+          options={workModeOptions}
+        />
       </div>
     </aside>
   )
