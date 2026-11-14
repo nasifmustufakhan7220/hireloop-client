@@ -1,4 +1,4 @@
-import UpdatedForm from "@/app/components/UpdatedForm"
+import UpdatedForm from "@/app/_components/UpdatedForm"
 import { getJobs } from "@/lib/api/jobs"
 import type { JobPost } from "@/lib/types/jobs"
 import { notFound } from "next/navigation"

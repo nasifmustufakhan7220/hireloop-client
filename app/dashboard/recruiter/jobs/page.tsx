@@ -35,7 +35,7 @@ import {
 
 import { cn } from "cn"
 import { getJobs } from "@/lib/api/jobs"
-import { DeleteJobs } from "@/app/components/DeleteJobs"
+import { DeleteJobs } from "@/app/_components/DeleteJobs"
 import type { JobPost, JobStatus } from "@/lib/types/jobs"
 
 const STATUS_STYLES: Record<JobStatus,{ badge: string; dot: string }> = {

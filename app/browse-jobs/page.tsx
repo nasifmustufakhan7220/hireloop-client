@@ -5,6 +5,7 @@ import { JOB_CATEGORIES, JOB_TYPES, type JobPost } from "@/lib/types/jobs"
 import { FiltersSidebar } from "./_components/FiltersSidebar"
 import { JobCard } from "./_components/JobCard"
 import { SearchBar } from "./_components/SearchBar"
+import Link from "next/link"
 
 const BrowseJobPage = async ({
   searchParams,
@@ -50,7 +51,9 @@ const BrowseJobPage = async ({
 
           <div className="mt-4 flex flex-col gap-3">
             {jobs.map((job) => (
-              <JobCard key={job._id} job={job} />
+              <Link href={`/browse-jobs/${job._id}`} key={job._id}>
+                <JobCard job={job} />
+              </Link>
             ))}
           </div>
 
